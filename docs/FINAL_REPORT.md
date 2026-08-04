@@ -24,3 +24,5 @@
 - NAS initializer: correctly failed closed because the target/share was unavailable; structure not created.
 - Browser interaction: passed for Thai POS search with citation, no-match refusal, disabled Admin writes and no console errors.
 - Responsive layout: passed horizontal-overflow checks at 360px and 1440px. Full WCAG AA audit across all requested breakpoints remains pending.
+- GitHub: initial source pushed to `IbanezHcu/auto-bot-foodlibrary` on `main`.
+- Clean Clone verification: passed `npm ci`, 10/10 tests, TypeScript, ESLint and production build from a fresh GitHub clone on 2026-08-04.
