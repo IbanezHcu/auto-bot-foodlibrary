@@ -1,0 +1,2 @@
+[CmdletBinding()]param([Parameter(Mandatory=$true)][string]$Destination)
+$report=[ordered]@{timestamp=(Get-Date).ToString("o");mode="DRY_RUN";source=(Get-Location).Path;destination=$Destination;gitFiles=(git ls-files|Measure-Object).Count;status="PLANNED";warning="No files copied. No delete or bidirectional sync is implemented.";toolVersion=$PSVersionTable.PSVersion.ToString()};$report|ConvertTo-Json -Depth 3

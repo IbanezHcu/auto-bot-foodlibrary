@@ -1,0 +1,27 @@
+"use client";
+import { useMemo, useState } from "react";
+import { searchKnowledge, type SearchResult } from "../lib/search/search";
+import { testKnowledge } from "../data/seed/test-knowledge";
+
+const quick = ["ขอเอกสาร","แจ้งซ่อม","วันหยุด","ปฏิทิน","ประกาศ","ระบบ IT"];
+const departments = [["IT","ระบบและอุปกรณ์"],["HR","บุคคลและสวัสดิการ"],["ACC","บัญชีและการเงิน"],["Operations","การปฏิบัติงาน"],["Marketing","สื่อและแบรนด์"],["Maintenance","งานซ่อมบำรุง"]];
+
+export function FoodlibraryApp(){
+  const [tab,setTab]=useState<"home"|"admin">("home"); const [query,setQuery]=useState(""); const [submitted,setSubmitted]=useState("");
+  const results=useMemo(()=>submitted?searchKnowledge(submitted,testKnowledge):[],[submitted]);
+  function run(value=query){setQuery(value);setSubmitted(value.trim())}
+  return <div className="app-shell">
+    <header className="topbar"><div className="brand"><span className="brand-mark">f.</span><span className="brand-text">Foodlibrary Hub</span></div><nav className="nav" aria-label="เมนูหลัก"><button className={tab==="home"?"active":""} onClick={()=>setTab("home")}>ค้นหา</button><button onClick={()=>setTab("home")}>ประกาศ</button><button onClick={()=>setTab("home")}>ปฏิทิน</button><button className={tab==="admin"?"active":""} onClick={()=>setTab("admin")}>Knowledge Studio</button><span className="avatar" aria-label="ผู้ใช้ทดสอบ">FL</span></nav></header>
+    <main className="main">{tab==="home"?<>
+      <span className="eyebrow">Foodlibrary Internal Knowledge</span><h1>ค้นหาคำตอบเรื่องงาน<br/>ได้จากที่เดียว</h1><p className="lead">ถามด้วยภาษาที่คุณใช้จริง ระบบจะค้นหาเฉพาะข้อมูลที่ผ่านการอนุมัติ พร้อมแหล่งอ้างอิงและผู้รับผิดชอบ</p>
+      <form className="search-wrap" onSubmit={e=>{e.preventDefault();run()}} role="search"><label className="sr-only" htmlFor="main-search">วันนี้ต้องการค้นหาอะไร?</label><input id="main-search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="วันนี้ต้องการค้นหาอะไร? เช่น POS เสีย"/><button className="mic" type="button" disabled title="Voice ยังไม่เปิดใช้งาน" aria-label="Voice ยังไม่เปิดใช้งาน">◉</button><button type="submit">ค้นหา</button></form>
+      <div className="chips" aria-label="คำถามด่วน">{quick.map(x=><button key={x} className="chip" onClick={()=>run(x)}>{x}</button>)}</div>
+      {submitted?<SearchResults query={submitted} results={results}/>:<div className="grid"><section className="card"><div className="card-head"><h2>ประกาศล่าสุด</h2><button className="link">ดูทั้งหมด →</button></div><article className="announcement"><span className="date">TEST<br/>DATA</span><div><h3>พื้นที่ประกาศของบริษัท</h3><p>รอข้อมูลจริงจากเจ้าของแผนก — จะแสดงเฉพาะประกาศที่ Published</p></div></article><article className="announcement"><span className="date">PILOT<br/>IT</span><div><h3>เริ่มนำเข้าความรู้แผนก IT</h3><p>ตัวอย่างสำหรับทดสอบระบบเท่านั้น ไม่ใช่นโยบายหรือขั้นตอนจริง</p></div></article></section><section className="card"><div className="card-head"><h2>ค้นหาตามแผนก</h2></div><div className="dept-grid">{departments.map(([a,b])=><button className="dept" key={a} onClick={()=>run(a)}>{a}<span>{b}</span></button>)}</div></section></div>}
+      <div className="notice"><span>ⓘ</span><span>ข้อมูลภายในองค์กร • ตรวจสอบแหล่งอ้างอิงและวันที่อัปเดตก่อนนำไปใช้ • AI ปิดอยู่ใน Phase 1</span></div>
+    </>:<Admin/>}</main>
+  </div>
+}
+
+function SearchResults({query,results}:{query:string;results:SearchResult[]}){return <section className="results" aria-live="polite"><div className="card-head"><div><span className="eyebrow">ผลการค้นหา</span><h2>“{query}” — {results.length} รายการ</h2></div><button className="link">ตัวกรอง ▾</button></div>{results.length?results.map(r=><article className="card result" key={r.item.id}><div className="result-meta"><span className="badge">{r.confidence}</span><span className="badge warn">TEST DATA</span><span className="badge">{r.item.department}</span></div><h3>{r.item.title}</h3><p>{r.item.summary}</p><div className="source"><span>แหล่งข้อมูล: {r.item.source}</span><span>Owner: {r.item.owner}</span><span>Version {r.item.version}</span><span>อัปเดต {r.item.updatedAt}</span></div></article>):<div className="card empty"><div className="empty-icon">⌕</div><h2>ยังไม่พบข้อมูลที่ยืนยันได้</h2><p>ระบบจะไม่สร้างคำตอบขึ้นเอง คำค้นนี้ควรถูกส่งเข้า Unanswered Questions เพื่อให้เจ้าของแผนกตรวจสอบ</p><button className="chip">ส่งคำขอข้อมูล</button></div>}</section>}
+
+function Admin(){return <section><span className="eyebrow">Knowledge Studio · Preview</span><h1 style={{fontSize:"clamp(34px,5vw,58px)"}}>ศูนย์จัดการความรู้</h1><p className="lead">ภาพตัวอย่างโครงสร้าง Admin — การเขียนข้อมูลจริงต้องเปิด Auth และ D1 ก่อน</p><div className="admin-grid"><div className="card metric"><strong>3</strong><span>Published · TEST DATA</span></div><div className="card metric"><strong>2</strong><span>รอตรวจสอบ</span></div><div className="card metric"><strong>7</strong><span>คำถามที่ยังไม่พบ</span></div><div className="card metric"><strong>—</strong><span>Backup · ยังไม่เชื่อม</span></div></div><div className="card"><div className="card-head"><h2>รายการความรู้</h2><button className="chip" disabled>+ สร้างรายการ</button></div><table className="table"><thead><tr><th>ชื่อ</th><th>Owner</th><th>สถานะ</th><th>Version</th></tr></thead><tbody>{testKnowledge.map(x=><tr key={x.id}><td>{x.title}</td><td>{x.owner}</td><td><span className="badge">{x.status}</span></td><td>{x.version}</td></tr>)}</tbody></table></div></section>}
