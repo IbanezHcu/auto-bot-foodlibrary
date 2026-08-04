@@ -26,3 +26,4 @@
 - Responsive layout: passed horizontal-overflow checks at 360px and 1440px. Full WCAG AA audit across all requested breakpoints remains pending.
 - GitHub: initial source pushed to `IbanezHcu/auto-bot-foodlibrary` on `main`.
 - Clean Clone verification: passed `npm ci`, 10/10 tests, TypeScript, ESLint and production build from a fresh GitHub clone on 2026-08-04.
+- Sites deployment: version 1 deployed successfully on 2026-08-04 with verified owner-only private access. Dedicated logical bindings are `DB` (D1) and `DOCUMENTS` (R2); the app remains TEST DATA/Search MVP and is not approved for staff production use.
